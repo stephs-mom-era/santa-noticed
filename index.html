@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Santa Noticed: a letter from Santa that sounds like he was watching</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FCF5F3;--card:#FFFFFF;--blush:#F6E9EE;--border:rgba(126,78,97,0.16);--peach:#E8D5DC;--plum:#7E4E61;--plum-2:#9B6B7D;--ink:#3B2A3A;--mid:#5A3A4C;--light:#9B6B7D;--red:#9E2A2B;--green:#2F5D46;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--mid);font-size:15px;line-height:1.6;}
+.page{max-width:760px;margin:0 auto;padding:28px 20px 80px;}
+h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:38px;line-height:1.1;color:var(--ink);text-align:center;margin-bottom:8px;}
+.tagline{text-align:center;font-size:16px;color:var(--mid);margin-bottom:22px;}
+.eyebrow{text-align:center;font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--plum);margin-bottom:10px;}
+.pill{display:block;width:fit-content;margin:14px auto 26px;background:var(--blush);border:1px solid var(--border);border-radius:99px;padding:6px 14px;font-size:12px;color:var(--mid);}
+.steps{background:var(--card);border:1px solid var(--peach);border-radius:12px;padding:22px 24px;margin-bottom:28px;}
+.steps h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:24px;color:var(--ink);margin-bottom:12px;}
+.step{display:flex;gap:14px;margin-bottom:18px;}
+.step:last-child{margin-bottom:0;}
+.n{flex:0 0 30px;height:30px;border-radius:50%;background:var(--plum);color:#fff;font-weight:500;display:flex;align-items:center;justify-content:center;}
+.b{flex:1;min-width:0;}
+.b p{margin-bottom:8px;}
+button{font-family:'DM Sans',sans-serif;cursor:pointer;min-height:46px;border-radius:8px;font-size:15px;font-weight:500;padding:11px 20px;}
+.btn-primary{background:var(--plum);color:#fff;border:none;}
+.btn-primary:hover{background:var(--plum-2);}
+.btn-secondary{background:#fff;color:var(--plum);border:1px solid var(--plum);}
+.btn-secondary:hover{background:var(--blush);}
+textarea.paste{width:100%;margin:8px 0 10px;border:1px solid var(--border);border-radius:8px;padding:12px;font-family:'DM Sans',sans-serif;font-size:16px;color:var(--ink);resize:vertical;}
+textarea.paste:focus{outline:none;border-color:var(--plum);}
+details{margin:8px 0;}
+summary{cursor:pointer;color:var(--plum);font-weight:500;font-size:14px;}
+details ul{padding-left:20px;margin-top:6px;font-size:14px;}
+details pre{white-space:pre-wrap;font-size:12px;background:var(--blush);border-radius:8px;padding:12px;margin-top:8px;max-height:260px;overflow:auto;}
+.msg{margin-top:10px;font-size:13px;color:var(--mid);}
+.msg.err{color:#B03030;}
+.hidden{display:none!important;}
+#result{margin-top:8px;}
+.result-bar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:0 0 16px;}
+.hint{text-align:center;font-size:12px;color:var(--light);margin-bottom:14px;}
+.checkbox{background:var(--card);border:1px solid var(--peach);border-radius:12px;padding:14px 18px;margin:18px 0;font-size:13px;}
+.checkbox strong{color:var(--ink);}
+.checkbox ul{padding-left:18px;margin-top:4px;}
+.sheet{position:relative;background:#FBF1DC;background-image:radial-gradient(circle at 20% 15%,rgba(214,176,118,.22),transparent 45%),radial-gradient(circle at 85% 90%,rgba(190,150,96,.25),transparent 50%),radial-gradient(circle at 80% 10%,rgba(255,255,255,.55),transparent 40%);border-radius:4px;box-shadow:0 6px 24px rgba(59,42,58,.18);padding:46px 52px 40px;color:#3A2A1E;}
+.sheet::before{content:'';position:absolute;inset:14px;border:2px solid rgba(158,42,43,.55);border-radius:2px;pointer-events:none;}
+.sheet::after{content:'';position:absolute;inset:20px;border:1px solid rgba(47,93,70,.5);pointer-events:none;}
+.sheet-head{text-align:center;margin-bottom:22px;}
+.sheet-head .from{font-family:'Great Vibes',cursive;font-size:38px;line-height:1.1;color:var(--red);}
+.sheet-head .addr{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--green);margin-top:4px;font-weight:600;}
+.holly{display:block;margin:8px auto 0;height:26px;}
+.letter{font-family:'Cormorant Garamond',Georgia,serif;font-size:20px;line-height:1.5;outline:none;}
+.letter p{margin-bottom:13px;}
+.letter .dear{font-weight:600;font-size:22px;}
+.letter:focus-within{background:rgba(255,255,255,.25);}
+.sign{margin-top:18px;font-family:'Cormorant Garamond',Georgia,serif;font-size:20px;}
+.sign .sig{font-family:'Great Vibes',cursive;font-size:44px;line-height:1;color:var(--red);display:block;margin-top:4px;}
+.sign .sub{font-size:14px;color:#6b5844;font-style:italic;}
+.seal{position:absolute;right:46px;bottom:38px;width:62px;height:62px;}
+.date{text-align:right;font-style:italic;font-size:16px;color:#6b5844;margin-bottom:14px;font-family:'Cormorant Garamond',Georgia,serif;}
+footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
+@media(max-width:600px){h1{font-size:30px;}.sheet{padding:38px 28px 34px;}.letter{font-size:18px;}.seal{width:48px;height:48px;right:30px;bottom:28px;}.sheet-head .from{font-size:32px;}}
+@page{size:letter;margin:0.4in;}
+@media print{
+  body{background:#fff;}
+  .page>*:not(#result),#result>*:not(.sheet){display:none!important;}
+  .page{padding:0;max-width:none;}
+  .sheet{box-shadow:none;border-radius:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;min-height:9.6in;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="eyebrow">Santa Noticed</div>
+  <h1>A letter from Santa that sounds like he was really watching.</h1>
+  <p class="tagline">Tell an AI about your kid for 5 minutes. Print Santa&#8217;s letter. Done.</p>
+  <span class="pill">&#128274; Nothing leaves your phone. We never see your answers.</span>
+
+  <div class="steps" id="aiCard">
+    <h2>Make the letter</h2>
+    <div class="step"><div class="n">1</div><div class="b">
+      <p>Copy the prompt.</p>
+      <button class="btn-secondary" onclick="copyPrompt()">Copy the AI prompt</button>
+      <div class="msg hidden" id="copyMsg"></div>
+    </div></div>
+    <div class="step"><div class="n">2</div><div class="b">
+      <p>Paste it into ChatGPT or Claude. Answer its questions about your child. Talk or type, messy is fine.</p>
+      <details><summary>What it asks</summary><ul>
+        <li>Name, age, nickname, siblings, pets</li>
+        <li>Wins this year (school, sports, being brave)</li>
+        <li>One kind thing they did</li>
+        <li>Something they&#8217;re working on</li>
+        <li>What they&#8217;re hoping for this Christmas</li>
+      </ul></details>
+      <details><summary>See the prompt</summary><pre id="promptText"></pre></details>
+    </div></div>
+    <div class="step"><div class="n">3</div><div class="b">
+      <p>Paste its answer here.</p>
+      <textarea class="paste" id="paste" rows="3" placeholder="Paste the AI&#8217;s answer"></textarea>
+      <button class="btn-primary" onclick="makeLetter()">Make the letter</button>
+      <div class="msg hidden" id="pasteMsg"></div>
+    </div></div>
+  </div>
+
+  <div id="result" class="hidden">
+    <div class="result-bar">
+      <button class="btn-primary" onclick="window.print()">Print or save as PDF</button>
+      <button class="btn-secondary" onclick="document.getElementById('aiCard').scrollIntoView({behavior:'smooth'})">Make another</button>
+    </div>
+    <p class="hint">Tap the letter to change any word. Printing leaves out everything except the letter.</p>
+
+    <div class="sheet" id="sheet">
+      <div class="sheet-head">
+        <div class="from">From the North Pole</div>
+        <div class="addr">Office of the Nice List &middot; Santa Claus</div>
+        <svg class="holly" viewBox="0 0 220 26" aria-hidden="true">
+          <line x1="10" y1="13" x2="90" y2="13" stroke="#2F5D46" stroke-width="1.2"/>
+          <line x1="130" y1="13" x2="210" y2="13" stroke="#2F5D46" stroke-width="1.2"/>
+          <path d="M110 13 C100 2 88 6 90 13 C92 20 104 22 110 13Z" fill="#2F5D46"/>
+          <path d="M110 13 C120 2 132 6 130 13 C128 20 116 22 110 13Z" fill="#2F5D46"/>
+          <circle cx="110" cy="14" r="3.6" fill="#9E2A2B"/><circle cx="105" cy="17" r="3" fill="#9E2A2B"/><circle cx="115" cy="17" r="3" fill="#9E2A2B"/>
+        </svg>
+      </div>
+      <div class="date" id="dateLine"></div>
+      <div class="letter" id="letter" contenteditable="true" spellcheck="true"></div>
+      <div class="sign"><span id="signoff">With a jolly heart,</span><span class="sig">Santa Claus</span><span class="sub">North Pole, watching with love</span></div>
+      <svg class="seal" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="29" fill="#9E2A2B"/><circle cx="32" cy="32" r="23" fill="none" stroke="#C85A5A" stroke-width="1.5"/>
+        <path d="M32 14 l4.6 10 10.9 1.2 -8.1 7.4 2.3 10.7 -9.7 -5.4 -9.7 5.4 2.3 -10.7 -8.1 -7.4 10.9 -1.2z" fill="#F2D49B"/>
+      </svg>
+    </div>
+
+    <div class="checkbox" id="checkBox">
+      <strong>Check it before you print.</strong> These are the details Santa used. Every one should be something you told the AI. Delete any line in the letter that isn&#8217;t true.
+      <ul id="usedList"></ul>
+    </div>
+  </div>
+  <footer>Made by Steph, a working mom. @stephs.mom.era</footer>
+</div>
+
+<script>
+const PROMPT=`You're helping me write a letter from Santa to my child. First, interview me. Then write the letter and give it to me as JSON in exactly the shape below.
+
+How to interview me:
+- Ask a few short questions at a time, then stop and wait for my answer. Use friendly, plain words.
+- I'll often answer by voice, so my answers may be messy. That's fine. Don't ask me to clean them up.
+- Cover these, in 2 or 3 rounds: (1) my child's first name, age, nickname, siblings, pets; (2) wins this year, like school, sports, being brave, learning something; (3) one kind thing they did for someone; (4) something they're working on, like tying shoes or sharing; (5) what they're hoping for this Christmas.
+- Give 2 or 3 quick examples with each question so I don't have to think hard.
+- If I say "skip", move on. If I give you everything at once, skip the questions I've already answered.
+- When we've covered it (or I say "done"), reply with the JSON.
+
+Rules for the letter:
+- Use ONLY details I told you. Do not invent any event, person, place, gift or fact. If I didn't give enough for a section, leave that section out.
+- Write in Santa's warm, gentle voice, in plain words a child can follow. Keep it to 150 to 220 words, in 4 or 5 short paragraphs.
+- Open with "Dear <name>,". Say Santa noticed specific things from my answers (named wins, the kind thing). Encourage the thing they're working on without scolding.
+- Mention the wish list only if I gave one, and never promise a specific gift. Say something like "I heard what you're hoping for, and the elves and I will do our best."
+- No emojis. No "magic of the season" filler. No rhymes. No dashes used as punctuation.
+- End by telling them Santa is proud of them.
+
+The JSON shape (reply with only this, inside one code block):
+
+{
+  "childName": "Ella",
+  "paragraphs": ["Dear Ella,", "First paragraph...", "Second paragraph..."],
+  "signoff": "With a jolly heart,",
+  "detailsUsed": ["Ella learned to ride her bike without training wheels", "She helped her little brother when he was sad"]
+}
+
+"detailsUsed" lists every fact from my answers that you used in the letter, one per line, so I can check them.
+
+Start by asking me about my child.`;
+document.getElementById('promptText').textContent=PROMPT;
+
+function msg(id,t,err){const m=document.getElementById(id);m.textContent=t;m.classList.remove('hidden');m.classList.toggle('err',!!err);}
+async function copyPrompt(){
+  try{await navigator.clipboard.writeText(PROMPT);msg('copyMsg','Prompt copied. Open ChatGPT or Claude, paste it, hit send, and answer its questions.');return;}catch(e){}
+  const d=document.getElementById('promptText').closest('details');d.open=true;
+  const r=document.createRange();r.selectNodeContents(document.getElementById('promptText'));const s=getSelection();s.removeAllRanges();s.addRange(r);
+  msg('copyMsg','Your phone blocked the copy button. The prompt is selected below: press and hold, then tap Copy.');
+}
+
+function parseAI(text){
+  const tries=[];
+  const fence=text.match(/```(?:json)?\s*([\s\S]*?)```/i);if(fence)tries.push(fence[1]);
+  const a=text.indexOf('{'),b=text.lastIndexOf('}');if(a>-1&&b>a)tries.push(text.slice(a,b+1));
+  tries.push(text);
+  for(const t of tries){
+    const clean=t.replace(/[“”]/g,'"').replace(/[‘’]/g,"'").trim();
+    for(const x of [t,clean]){try{const o=JSON.parse(x);if(o&&typeof o==='object'&&!Array.isArray(o))return o;}catch(e){}}
+  }
+  return null;
+}
+const str=v=>v==null?'':(Array.isArray(v)?v.map(str).filter(Boolean).join(', '):String(v).trim());
+const list=v=>Array.isArray(v)?v.map(str).filter(Boolean):(str(v)?[str(v)]:[]);
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function render(o){
+  const paras=list(o.paragraphs||o.letter||o.body);
+  if(!paras.length)return false;
+  const el=document.getElementById('letter');
+  el.innerHTML=paras.map((p,i)=>`<p${i===0?' class="dear"':''}>${esc(p)}</p>`).join('');
+  document.getElementById('signoff').textContent=str(o.signoff)||'With a jolly heart,';
+  const used=list(o.detailsUsed||o.details_used);
+  document.getElementById('usedList').innerHTML=used.map(u=>`<li>${esc(u)}</li>`).join('');
+  document.getElementById('checkBox').classList.toggle('hidden',!used.length);
+  const yr=new Date().getFullYear();
+  document.getElementById('dateLine').textContent='December 1, '+yr;
+  const r=document.getElementById('result');r.classList.remove('hidden');
+  return true;
+}
+function makeLetter(){
+  const text=document.getElementById('paste').value;
+  if(!text.trim()){msg('pasteMsg','Paste the AI’s answer first.',true);return;}
+  const o=parseAI(text);
+  if(!o||!render(o)){msg('pasteMsg','That didn’t look like the letter. Go back to the AI and say: "Give me the final JSON only." Then paste that.',true);return;}
+  msg('pasteMsg','Your letter is ready below.');
+  document.getElementById('result').scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
