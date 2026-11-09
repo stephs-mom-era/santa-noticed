@@ -52,7 +52,7 @@ details pre{white-space:pre-wrap;font-size:12px;background:var(--blush);border-r
 .sign .sig{font-family:'Great Vibes',cursive;font-size:6cqw;line-height:1;color:#9E2A2B;display:block;margin-top:.4cqw;}
 .sign .sub{font-size:1.9cqw;color:#6b5844;font-style:italic;}
 .seal{position:absolute;right:23%;bottom:9.5%;width:10cqw;filter:drop-shadow(0 .4cqw .6cqw rgba(60,20,20,.35));}
-.cert .inner{left:12%;right:12%;top:17%;bottom:19%;align-items:center;text-align:center;}
+.cert .inner{left:12%;right:12%;top:14.5%;bottom:20%;align-items:center;text-align:center;}
 .c-small{margin-top:0;font-family:Cinzel,'Cormorant Garamond',serif;letter-spacing:.9cqw;font-size:1.9cqw;color:#2F5D46;}
 .c-title{margin-top:1.6cqw;font-family:'Great Vibes',cursive;font-size:11.5cqw;line-height:1.05;color:#9E2A2B;}
 .c-word{font-family:Cinzel,'Cormorant Garamond',serif;letter-spacing:.9cqw;font-size:3.2cqw;margin-top:.4cqw;}
@@ -60,9 +60,13 @@ details pre{white-space:pre-wrap;font-size:12px;background:var(--blush);border-r
 .c-name{font-family:'Great Vibes',cursive;font-size:12.5cqw;line-height:1.1;color:#3A2A1E;outline:none;min-width:30cqw;}
 .c-rule{width:46cqw;border-top:.2cqw solid #C9A24D;margin:.6cqw 0 1.6cqw;}
 .c-text{font-family:'Cormorant Garamond',serif;font-size:3cqw;line-height:1.4;max-width:60cqw;outline:none;}
-.c-sleigh{width:54cqw;margin-top:2.4cqw;}
+.c-sleigh{width:38cqw;margin-top:3.5cqw;}
 .c-seal{position:absolute;left:50%;top:88%;width:15.5cqw;transform:translate(-50%,-50%);filter:drop-shadow(0 .5cqw .8cqw rgba(60,20,20,.35));}
-.c-sign{position:absolute;bottom:8%;font-family:'Great Vibes',cursive;font-size:5.4cqw;color:#9E2A2B;line-height:1;}
+.c-sig{position:absolute;bottom:8.6%;width:25cqw;text-align:center;border-top:.25cqw solid #3A2A1E;padding-top:.6cqw;}
+.c-sig.l{left:11.5%;}.c-sig.r{right:11.5%;}
+.c-sig .v{font-family:'Great Vibes',cursive;font-size:5.6cqw;color:#9E2A2B;line-height:1;position:absolute;left:0;right:0;bottom:100%;margin-bottom:.4cqw;}
+.c-sig .v.d{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:2.7cqw;color:#3A2A1E;margin-bottom:.8cqw;}
+.c-sig .k{font-family:Cinzel,serif;font-size:1.5cqw;letter-spacing:.5cqw;color:#3A2A1E;}
 .hero{display:block;width:min(82%,520px);margin:0 auto 8px;}
 footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
 @media(max-width:600px){h1{font-size:30px;}}
@@ -140,6 +144,8 @@ footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
         <div class="c-text" contenteditable="true">has been very good this year, and is officially on Santa&#8217;s Nice List.</div>
         <img class="c-sleigh" src="art/sleigh.png" alt="">
       </div>
+      <div class="c-sig l"><span class="v">Santa Claus</span><span class="k">SANTA</span></div>
+      <div class="c-sig r"><span class="v d" id="certDate"></span><span class="k">DATE</span></div>
       <img class="c-seal" src="art/seal.png" alt="">
     </div>
 
@@ -217,7 +223,7 @@ function render(o){
   document.getElementById('usedList').innerHTML=used.map(u=>`<li>${esc(u)}</li>`).join('');
   document.getElementById('checkBox').classList.toggle('hidden',!used.length);
   const yr=new Date().getFullYear();
-  document.getElementById('dateLine').textContent='December 1, '+yr;
+  document.getElementById('dateLine').textContent='December 1, '+yr;document.getElementById('certDate').textContent='December 1, '+yr;
   const nm=str(o.childName||o.child_name)||((paras[0]||'').replace(/^dear\s+/i,'').replace(/[,:]\s*$/,''))||'Your Child';
   document.getElementById('certName').textContent=nm;
   const r=document.getElementById('result');r.classList.remove('hidden');
