@@ -77,8 +77,9 @@ footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
   .page>*:not(#result),#result>*:not(.sheet){display:none!important;}
   .page{padding:0;max-width:none;}
   .sheet{box-shadow:none;margin:0;width:8.5in;height:10.97in;-webkit-print-color-adjust:exact;print-color-adjust:exact;break-after:avoid;}
-  body.pc #sheet{display:none!important;}
-  body.pl #sheetCert{display:none!important;}
+  body.pl #sheetCert,body.pl #sheetReply{display:none!important;}
+  body.pc #sheet,body.pc #sheetReply{display:none!important;}
+  body.pr #sheet,body.pr #sheetCert{display:none!important;}
 }
 </style>
 </head>
@@ -91,7 +92,7 @@ footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
   <span class="pill">&#128274; Nothing leaves your phone. We never see your answers.</span>
 
   <div class="steps" id="aiCard">
-    <h2>Make the letter</h2>
+    <h2>Make the letter, reply and certificate</h2>
     <div class="step"><div class="n">1</div><div class="b">
       <p>Copy the prompt.</p>
       <button class="btn-secondary" onclick="copyPrompt()">Copy the AI prompt</button>
@@ -119,16 +120,26 @@ footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
   <div id="result" class="hidden">
     <div class="result-bar">
       <button class="btn-primary" onclick="printWhich('pl')">Print the letter</button>
+      <button class="btn-primary" onclick="printWhich('pr')" id="btnReply">Print Santa&#8217;s reply</button>
       <button class="btn-primary" onclick="printWhich('pc')">Print the certificate</button>
       <button class="btn-secondary" onclick="document.getElementById('aiCard').scrollIntoView({behavior:'smooth'})">Make another</button>
     </div>
-    <p class="hint">Tap the letter or the name on the certificate to change any word. Printing leaves out everything except the page you pick. Choose &#8220;Save as PDF&#8221; to keep it.</p>
+    <p class="hint">Tap the letter, the reply or the name on the certificate to change any word. Printing leaves out everything except the page you pick. Choose &#8220;Save as PDF&#8221; to keep it.</p>
 
     <div class="sheet" id="sheet">
       <div class="inner">
         <div class="date" id="dateLine"></div>
         <div class="letter" id="letter" contenteditable="true" spellcheck="true"></div>
         <div class="sign"><span id="signoff">With a jolly heart,</span><span class="sig">Santa Claus</span><span class="sub">North Pole, watching with love</span></div>
+      </div>
+      <img class="seal" src="art/seal.png" alt="">
+    </div>
+
+    <div class="sheet" id="sheetReply">
+      <div class="inner">
+        <div class="date" id="replyDate"></div>
+        <div class="letter" id="replyBody" contenteditable="true" spellcheck="true"></div>
+        <div class="sign"><span id="replySignoff">With a jolly heart,</span><span class="sig">Santa Claus</span><span class="sub">North Pole, watching with love</span></div>
       </div>
       <img class="seal" src="art/seal.png" alt="">
     </div>
@@ -176,12 +187,20 @@ Rules for the letter:
 - No emojis. No "magic of the season" filler. No rhymes. No dashes used as punctuation.
 - End by telling them Santa is proud of them.
 
+Rules for Santa's reply to the wish list:
+- Only if I gave a wish list. Write a second, shorter letter: Santa answering what they asked for. 90 to 130 words, 3 or 4 short paragraphs, same warm voice.
+- Name each thing they asked for, using my words. Say the elves wrote it all down and will do their best. NEVER promise a gift or say whether they are getting it.
+- Add one sentence about their kindness or effort, using only a detail from my answers.
+- Same bans as the letter: no emojis, no filler, no rhymes, no dashes as punctuation, nothing invented.
+- If I gave no wish list, use an empty list for "replyParagraphs".
+
 The JSON shape (reply with only this, inside one code block):
 
 {
   "childName": "Ella",
   "paragraphs": ["Dear Ella,", "First paragraph...", "Second paragraph..."],
   "signoff": "With a jolly heart,",
+  "replyParagraphs": ["Dear Ella,", "Thank you for sending me your list...", "The elves wrote down every one..."],
   "detailsUsed": ["Ella learned to ride her bike without training wheels", "She helped her little brother when he was sad"]
 }
 
@@ -224,6 +243,12 @@ function render(o){
   document.getElementById('checkBox').classList.toggle('hidden',!used.length);
   const yr=new Date().getFullYear();
   document.getElementById('dateLine').textContent='December 1, '+yr;document.getElementById('certDate').textContent='December 1, '+yr;
+  const rp=list(o.replyParagraphs||o.reply_paragraphs||o.reply);
+  document.getElementById('replyBody').innerHTML=rp.map((p,i)=>`<p${i===0?' class="dear"':''}>${esc(p)}</p>`).join('');
+  document.getElementById('replyDate').textContent='December 1, '+yr;
+  document.getElementById('replySignoff').textContent=str(o.signoff)||'With a jolly heart,';
+  document.getElementById('sheetReply').classList.toggle('hidden',!rp.length);
+  document.getElementById('btnReply').classList.toggle('hidden',!rp.length);
   const nm=str(o.childName||o.child_name)||((paras[0]||'').replace(/^dear\s+/i,'').replace(/[,:]\s*$/,''))||'Your Child';
   document.getElementById('certName').textContent=nm;
   const r=document.getElementById('result');r.classList.remove('hidden');
