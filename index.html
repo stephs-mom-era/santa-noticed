@@ -41,35 +41,45 @@ details pre{white-space:pre-wrap;font-size:12px;background:var(--blush);border-r
 .checkbox{background:var(--card);border:1px solid var(--peach);border-radius:12px;padding:14px 18px;margin:18px 0;font-size:13px;}
 .checkbox strong{color:var(--ink);}
 .checkbox ul{padding-left:18px;margin-top:4px;}
-.sheet{position:relative;background:#FBF1DC;background-image:radial-gradient(circle at 20% 15%,rgba(214,176,118,.22),transparent 45%),radial-gradient(circle at 85% 90%,rgba(190,150,96,.25),transparent 50%),radial-gradient(circle at 80% 10%,rgba(255,255,255,.55),transparent 40%);border-radius:4px;box-shadow:0 6px 24px rgba(59,42,58,.18);padding:46px 52px 40px;color:#3A2A1E;}
-.sheet::before{content:'';position:absolute;inset:14px;border:2px solid rgba(158,42,43,.55);border-radius:2px;pointer-events:none;}
-.sheet::after{content:'';position:absolute;inset:20px;border:1px solid rgba(47,93,70,.5);pointer-events:none;}
-.sheet-head{text-align:center;margin-bottom:22px;}
-.sheet-head .from{font-family:'Great Vibes',cursive;font-size:38px;line-height:1.1;color:var(--red);}
-.sheet-head .addr{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--green);margin-top:4px;font-weight:600;}
-.holly{display:block;margin:8px auto 0;height:26px;}
-.letter{font-family:'Cormorant Garamond',Georgia,serif;font-size:20px;line-height:1.5;outline:none;}
-.letter p{margin-bottom:13px;}
-.letter .dear{font-weight:600;font-size:22px;}
-.letter:focus-within{background:rgba(255,255,255,.25);}
-.sign{margin-top:18px;font-family:'Cormorant Garamond',Georgia,serif;font-size:20px;}
-.sign .sig{font-family:'Great Vibes',cursive;font-size:44px;line-height:1;color:var(--red);display:block;margin-top:4px;}
-.sign .sub{font-size:14px;color:#6b5844;font-style:italic;}
-.seal{position:absolute;right:46px;bottom:38px;width:62px;height:62px;}
-.date{text-align:right;font-style:italic;font-size:16px;color:#6b5844;margin-bottom:14px;font-family:'Cormorant Garamond',Georgia,serif;}
+.sheet{container-type:inline-size;position:relative;width:100%;aspect-ratio:8.5/11;background:#FBF0D9 url(art/letter-bg.jpg) center/100% 100% no-repeat;box-shadow:0 6px 24px rgba(59,42,58,.18);color:#3A2A1E;overflow:hidden;margin-bottom:26px;}
+.sheet.cert{background-image:url(art/certificate-bg.jpg);}
+.inner{position:absolute;left:15%;right:13%;top:18%;bottom:14.5%;display:flex;flex-direction:column;}
+.date{text-align:right;font-style:italic;font-size:2.3cqw;color:#6b5844;margin-bottom:1.2cqw;font-family:'Cormorant Garamond',Georgia,serif;}
+.letter{font-family:'Cormorant Garamond',Georgia,serif;font-size:2.35cqw;line-height:1.38;outline:none;}
+.letter p{margin-bottom:1.4cqw;}
+.letter .dear{font-weight:600;font-size:2.8cqw;}
+.sign{margin-top:1.2cqw;font-family:'Cormorant Garamond',Georgia,serif;font-size:2.4cqw;}
+.sign .sig{font-family:'Great Vibes',cursive;font-size:6cqw;line-height:1;color:#9E2A2B;display:block;margin-top:.4cqw;}
+.sign .sub{font-size:1.9cqw;color:#6b5844;font-style:italic;}
+.seal{position:absolute;right:15%;bottom:9.5%;width:10cqw;filter:drop-shadow(0 .4cqw .6cqw rgba(60,20,20,.35));}
+.cert .inner{left:12%;right:12%;top:19%;bottom:16%;align-items:center;text-align:center;}
+.c-small{font-family:Cinzel,'Cormorant Garamond',serif;letter-spacing:.9cqw;font-size:1.9cqw;color:#2F5D46;}
+.c-title{font-family:'Great Vibes',cursive;font-size:11.5cqw;line-height:1.05;color:#9E2A2B;}
+.c-word{font-family:Cinzel,'Cormorant Garamond',serif;letter-spacing:.9cqw;font-size:3.2cqw;margin-top:.4cqw;}
+.c-cert{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:2.8cqw;color:#6b5844;margin-top:2.2cqw;}
+.c-name{font-family:'Great Vibes',cursive;font-size:12.5cqw;line-height:1.1;color:#3A2A1E;outline:none;min-width:30cqw;}
+.c-rule{width:46cqw;border-top:.2cqw solid #C9A24D;margin:.6cqw 0 1.6cqw;}
+.c-text{font-family:'Cormorant Garamond',serif;font-size:3cqw;line-height:1.4;max-width:60cqw;outline:none;}
+.c-sleigh{width:44cqw;margin-top:1.8cqw;}
+.c-seal{position:absolute;left:50%;bottom:6.2%;width:17cqw;transform:translateX(-50%);filter:drop-shadow(0 .5cqw .8cqw rgba(60,20,20,.35));}
+.c-sign{position:absolute;bottom:8%;font-family:'Great Vibes',cursive;font-size:5.4cqw;color:#9E2A2B;line-height:1;}
+.hero{display:block;width:min(82%,520px);margin:0 auto 8px;}
 footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
-@media(max-width:600px){h1{font-size:30px;}.sheet{padding:38px 28px 34px;}.letter{font-size:18px;}.seal{width:48px;height:48px;right:30px;bottom:28px;}.sheet-head .from{font-size:32px;}}
-@page{size:letter;margin:0.4in;}
+@media(max-width:600px){h1{font-size:30px;}}
+@page{size:letter;margin:0;}
 @media print{
   body{background:#fff;}
   .page>*:not(#result),#result>*:not(.sheet){display:none!important;}
   .page{padding:0;max-width:none;}
-  .sheet{box-shadow:none;border-radius:0;-webkit-print-color-adjust:exact;print-color-adjust:exact;min-height:9.6in;}
+  .sheet{box-shadow:none;margin:0;width:8.5in;height:11in;-webkit-print-color-adjust:exact;print-color-adjust:exact;break-after:avoid;}
+  body.pc #sheet{display:none!important;}
+  body.pl #sheetCert{display:none!important;}
 }
 </style>
 </head>
 <body>
 <div class="page">
+  <img class="hero" src="art/sleigh.png" alt="">
   <div class="eyebrow">Santa Noticed</div>
   <h1>A letter from Santa that sounds like he was really watching.</h1>
   <p class="tagline">Tell an AI about your kid for 5 minutes. Print Santa&#8217;s letter. Done.</p>
@@ -103,30 +113,33 @@ footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
 
   <div id="result" class="hidden">
     <div class="result-bar">
-      <button class="btn-primary" onclick="window.print()">Print or save as PDF</button>
+      <button class="btn-primary" onclick="printWhich('pl')">Print the letter</button>
+      <button class="btn-primary" onclick="printWhich('pc')">Print the certificate</button>
       <button class="btn-secondary" onclick="document.getElementById('aiCard').scrollIntoView({behavior:'smooth'})">Make another</button>
     </div>
-    <p class="hint">Tap the letter to change any word. Printing leaves out everything except the letter.</p>
+    <p class="hint">Tap the letter or the name on the certificate to change any word. Printing leaves out everything except the page you pick. Choose &#8220;Save as PDF&#8221; to keep it.</p>
 
     <div class="sheet" id="sheet">
-      <div class="sheet-head">
-        <div class="from">From the North Pole</div>
-        <div class="addr">Office of the Nice List &middot; Santa Claus</div>
-        <svg class="holly" viewBox="0 0 220 26" aria-hidden="true">
-          <line x1="10" y1="13" x2="90" y2="13" stroke="#2F5D46" stroke-width="1.2"/>
-          <line x1="130" y1="13" x2="210" y2="13" stroke="#2F5D46" stroke-width="1.2"/>
-          <path d="M110 13 C100 2 88 6 90 13 C92 20 104 22 110 13Z" fill="#2F5D46"/>
-          <path d="M110 13 C120 2 132 6 130 13 C128 20 116 22 110 13Z" fill="#2F5D46"/>
-          <circle cx="110" cy="14" r="3.6" fill="#9E2A2B"/><circle cx="105" cy="17" r="3" fill="#9E2A2B"/><circle cx="115" cy="17" r="3" fill="#9E2A2B"/>
-        </svg>
+      <div class="inner">
+        <div class="date" id="dateLine"></div>
+        <div class="letter" id="letter" contenteditable="true" spellcheck="true"></div>
+        <div class="sign"><span id="signoff">With a jolly heart,</span><span class="sig">Santa Claus</span><span class="sub">North Pole, watching with love</span></div>
       </div>
-      <div class="date" id="dateLine"></div>
-      <div class="letter" id="letter" contenteditable="true" spellcheck="true"></div>
-      <div class="sign"><span id="signoff">With a jolly heart,</span><span class="sig">Santa Claus</span><span class="sub">North Pole, watching with love</span></div>
-      <svg class="seal" viewBox="0 0 64 64" aria-hidden="true">
-        <circle cx="32" cy="32" r="29" fill="#9E2A2B"/><circle cx="32" cy="32" r="23" fill="none" stroke="#C85A5A" stroke-width="1.5"/>
-        <path d="M32 14 l4.6 10 10.9 1.2 -8.1 7.4 2.3 10.7 -9.7 -5.4 -9.7 5.4 2.3 -10.7 -8.1 -7.4 10.9 -1.2z" fill="#F2D49B"/>
-      </svg>
+      <img class="seal" src="art/seal.png" alt="">
+    </div>
+
+    <div class="sheet cert" id="sheetCert">
+      <div class="inner">
+        <div class="c-small">THE NORTH POLE</div>
+        <div class="c-title">Nice List</div>
+        <div class="c-word">CERTIFICATE</div>
+        <div class="c-cert">This is to certify that</div>
+        <div class="c-name" id="certName" contenteditable="true" spellcheck="false">Your Child</div>
+        <div class="c-rule"></div>
+        <div class="c-text" contenteditable="true">has been very good this year, and is officially on Santa&#8217;s Nice List.</div>
+        <img class="c-sleigh" src="art/sleigh.png" alt="">
+      </div>
+      <img class="c-seal" src="art/seal.png" alt="">
     </div>
 
     <div class="checkbox" id="checkBox">
@@ -204,9 +217,12 @@ function render(o){
   document.getElementById('checkBox').classList.toggle('hidden',!used.length);
   const yr=new Date().getFullYear();
   document.getElementById('dateLine').textContent='December 1, '+yr;
+  const nm=str(o.childName||o.child_name)||((paras[0]||'').replace(/^dear\s+/i,'').replace(/[,:]\s*$/,''))||'Your Child';
+  document.getElementById('certName').textContent=nm;
   const r=document.getElementById('result');r.classList.remove('hidden');
   return true;
 }
+function printWhich(c){document.body.classList.remove('pl','pc');document.body.classList.add(c);window.print();}
 function makeLetter(){
   const text=document.getElementById('paste').value;
   if(!text.trim()){msg('pasteMsg','Paste the AI’s answer first.',true);return;}
