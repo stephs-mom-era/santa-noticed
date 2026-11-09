@@ -68,10 +68,11 @@ footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
 @media(max-width:600px){h1{font-size:30px;}}
 @page{size:letter;margin:0;}
 @media print{
-  body{background:#fff;}
+  html,body{background:#fff;height:auto;overflow:hidden;}
+  #result{margin:0;}
   .page>*:not(#result),#result>*:not(.sheet){display:none!important;}
   .page{padding:0;max-width:none;}
-  .sheet{box-shadow:none;margin:0;width:8.5in;height:11in;-webkit-print-color-adjust:exact;print-color-adjust:exact;break-after:avoid;}
+  .sheet{box-shadow:none;margin:0;width:8.5in;height:10.97in;-webkit-print-color-adjust:exact;print-color-adjust:exact;break-after:avoid;}
   body.pc #sheet{display:none!important;}
   body.pl #sheetCert{display:none!important;}
 }
