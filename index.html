@@ -38,6 +38,7 @@ details pre{white-space:pre-wrap;font-size:12px;background:var(--blush);border-r
 #result{margin-top:8px;}
 .result-bar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:0 0 16px;}
 .hint{text-align:center;font-size:12px;color:var(--light);margin-bottom:14px;}
+.hint.warn{color:#fff;background:var(--red);border-radius:8px;padding:10px 14px;font-size:14px;}
 .checkbox{background:var(--card);border:1px solid var(--peach);border-radius:12px;padding:14px 18px;margin:18px 0;font-size:13px;}
 .checkbox strong{color:var(--ink);}
 .checkbox ul{padding-left:18px;margin-top:4px;}
@@ -124,6 +125,7 @@ footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
       <button class="btn-primary" onclick="printWhich('pc')">Print the certificate</button>
       <button class="btn-secondary" onclick="document.getElementById('aiCard').scrollIntoView({behavior:'smooth'})">Make another</button>
     </div>
+    <p class="hint warn hidden" id="tooLong">This one is too long for one page. Tap the letter and delete a sentence or two until this message goes away.</p>
     <p class="hint">Tap the letter, the reply or the name on the certificate to change any word. Printing leaves out everything except the page you pick. Choose &#8220;Save as PDF&#8221; to keep it.</p>
 
     <div class="sheet" id="sheet">
@@ -259,10 +261,12 @@ function fit(id){
   const sh=document.getElementById(id);if(!sh||sh.offsetParent===null)return;
   const inner=sh.querySelector('.inner'),lt=sh.querySelector('.letter');
   let sz=3.8;lt.style.fontSize=sz+'cqw';
-  while(sz>2.0&&inner.scrollHeight>inner.clientHeight+1){sz-=0.05;lt.style.fontSize=sz.toFixed(2)+'cqw';}
+  while(sz>1.8&&inner.scrollHeight>inner.clientHeight+1){sz-=0.05;lt.style.fontSize=sz.toFixed(2)+'cqw';}
   lt.style.setProperty('--dear',(sz*1.2).toFixed(2)+'cqw');
+  sh.dataset.over=inner.scrollHeight>inner.clientHeight+1?'1':'';
 }
-function fitAll(){fit('sheet');fit('sheetReply');}
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>fitAll());
+function fitAll(){fit('sheet');fit('sheetReply');document.getElementById('tooLong').classList.toggle('hidden',!(document.getElementById('sheet').dataset.over||document.getElementById('sheetReply').dataset.over));}
 document.addEventListener('DOMContentLoaded',()=>{['letter','replyBody'].forEach(i=>document.getElementById(i).addEventListener('input',fitAll));});
 function printWhich(c){document.body.classList.remove('pl','pc');document.body.classList.add(c);window.print();}
 function makeLetter(){
