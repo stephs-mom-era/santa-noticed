@@ -15,6 +15,7 @@ h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:38px;line-he
 .eyebrow{text-align:center;font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--plum);margin-bottom:10px;}
 .pill{display:block;width:fit-content;margin:14px auto 26px;background:var(--blush);border:1px solid var(--border);border-radius:99px;padding:6px 14px;font-size:12px;color:var(--mid);}
 .steps{background:var(--card);border:1px solid var(--peach);border-radius:12px;padding:22px 24px;margin-bottom:28px;}
+.when .n{background:var(--red);}
 .steps h2{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:24px;color:var(--ink);margin-bottom:12px;}
 .step{display:flex;gap:14px;margin-bottom:18px;}
 .step:last-child{margin-bottom:0;}
@@ -89,8 +90,8 @@ footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
   <img class="hero" src="art/sleigh.png" alt="">
   <div class="eyebrow">Santa Noticed</div>
   <h1>A letter from Santa that sounds like he was really watching.</h1>
-  <p class="tagline">Tell an AI about your kid for 5 minutes. Print Santa&#8217;s letter. Done.</p>
-  <span class="pill">&#128274; Nothing leaves your phone. We never see your answers.</span>
+  <p class="tagline"><strong>Talk. Paste. Print.</strong></p>
+  <span class="pill">&#128274; We never see your answers.</span>
 
   <div class="steps" id="aiCard">
     <h2>Make the letter, reply and certificate</h2>
@@ -100,7 +101,7 @@ footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
       <div class="msg hidden" id="copyMsg"></div>
     </div></div>
     <div class="step"><div class="n">2</div><div class="b">
-      <p>Paste it into ChatGPT or Claude. Answer its questions about your child. Talk or type, messy is fine.</p>
+      <p>Paste it into ChatGPT, Claude or Muse. Talk about your kid. Messy is fine.</p>
       <details><summary>What it asks</summary><ul>
         <li>Name, age, nickname, siblings, pets</li>
         <li>Wins this year (school, sports, being brave)</li>
@@ -111,11 +112,18 @@ footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
       <details><summary>See the prompt</summary><pre id="promptText"></pre></details>
     </div></div>
     <div class="step"><div class="n">3</div><div class="b">
-      <p>Paste its answer here.</p>
+      <p>Paste the answer here.</p>
       <textarea class="paste" id="paste" rows="3" placeholder="Paste the AI&#8217;s answer"></textarea>
-      <button class="btn-primary" onclick="makeLetter()">Make the letter</button>
+      <button class="btn-primary" onclick="makeLetter()">Make it</button>
       <div class="msg hidden" id="pasteMsg"></div>
     </div></div>
+  </div>
+
+  <div class="steps when" id="whenCard">
+    <h2>When to give each one</h2>
+    <div class="step"><div class="n">1</div><div class="b"><p><strong>The letter:</strong> first week of December. Fold it, tie a ribbon, leave it where Santa would: the mailbox, a pillow, next to the cookie plate.</p></div></div>
+    <div class="step"><div class="n">2</div><div class="b"><p><strong>The reply:</strong> a few days after your kid sends Santa their list. Read it out loud.</p></div></div>
+    <div class="step"><div class="n">3</div><div class="b"><p><strong>The certificate:</strong> Christmas Eve, by the cookies. Or tape it up on December 1.</p></div></div>
   </div>
 
   <div id="result" class="hidden">
@@ -130,7 +138,7 @@ footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
 
     <div class="sheet" id="sheet">
       <div class="inner">
-        <div class="date" id="dateLine"></div>
+        <div class="date" id="dateLine" contenteditable="true"></div>
         <div class="letter" id="letter" contenteditable="true" spellcheck="true"></div>
         <div class="sign"><span id="signoff">With a jolly heart,</span><span class="sig">Santa Claus</span><span class="sub">North Pole, watching with love</span></div>
       </div>
@@ -139,7 +147,7 @@ footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
 
     <div class="sheet" id="sheetReply">
       <div class="inner">
-        <div class="date" id="replyDate"></div>
+        <div class="date" id="replyDate" contenteditable="true"></div>
         <div class="letter" id="replyBody" contenteditable="true" spellcheck="true"></div>
         <div class="sign"><span id="replySignoff">With a jolly heart,</span><span class="sig">Santa Claus</span><span class="sub">North Pole, watching with love</span></div>
       </div>
@@ -182,6 +190,7 @@ How to interview me:
 - When we've covered it (or I say "done"), reply with the JSON.
 
 Rules for the letter:
+- You do NOT have to use every detail I gave you. Pick the best 3 or 4 so the letter stays short.
 - Use ONLY details I told you. Do not invent any event, person, place, gift or fact. If I didn't give enough for a section, leave that section out.
 - Write in Santa's warm, gentle voice, in plain words a child can follow. Keep it to 150 to 220 words, in 4 or 5 short paragraphs.
 - Open with "Dear <name>,". Say Santa noticed specific things from my answers (named wins, the kind thing). Encourage the thing they're working on without scolding.
