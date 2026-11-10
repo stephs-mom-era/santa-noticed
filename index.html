@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Santa Noticed: a letter from Santa that sounds like he was watching</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&family=Great+Vibes&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&family=Great+Vibes&family=Patrick+Hand&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#FBF3E4;--card:#FFFDF8;--blush:#F5E6CB;--border:rgba(158,42,43,0.20);--peach:#E2CBA0;--plum:#9E2A2B;--plum-2:#B83B3B;--ink:#3A2A1E;--mid:#5A4030;--light:#8A6A4A;--red:#9E2A2B;--green:#2F5D46;}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -44,22 +44,22 @@ details pre{white-space:pre-wrap;font-size:12px;background:var(--blush);border-r
 .sheet{container-type:inline-size;position:relative;width:100%;aspect-ratio:8.5/11;background:#FBF0D9 url(art/letter-bg.jpg) center/100% 100% no-repeat;box-shadow:0 6px 24px rgba(59,42,58,.18);color:#3A2A1E;overflow:hidden;margin-bottom:26px;}
 .sheet.cert{background-image:url(art/certificate-bg.jpg);}
 .inner{position:absolute;left:15%;right:13%;top:19%;bottom:15%;display:flex;flex-direction:column;}
-.date{text-align:right;font-style:italic;font-size:2.3cqw;color:#6b5844;margin-bottom:1.2cqw;font-family:'Cormorant Garamond',Georgia,serif;}
-.letter{font-family:'Cormorant Garamond',Georgia,serif;font-size:2.35cqw;line-height:1.38;outline:none;}
+.date{text-align:right;font-size:2.5cqw;color:#6b5844;margin-bottom:1.2cqw;font-family:'Patrick Hand',cursive;}
+.letter{font-family:'Patrick Hand','Comic Sans MS',cursive;font-size:2.9cqw;line-height:1.36;outline:none;}
 .letter p{margin-bottom:1.4cqw;}
-.letter .dear{font-weight:600;font-size:2.8cqw;}
-.sign{margin-top:1.2cqw;font-family:'Cormorant Garamond',Georgia,serif;font-size:2.4cqw;}
+.letter .dear{font-size:var(--dear,3.5cqw);color:#9E2A2B;}
+.sign{margin-top:1.2cqw;font-family:'Patrick Hand',cursive;font-size:2.9cqw;}
 .sign .sig{font-family:'Great Vibes',cursive;font-size:6cqw;line-height:1;color:#9E2A2B;display:block;margin-top:.4cqw;}
-.sign .sub{font-size:1.9cqw;color:#6b5844;font-style:italic;}
+.sign .sub{font-size:2.2cqw;color:#6b5844;}
 .seal{position:absolute;right:23%;bottom:9.5%;width:10cqw;filter:drop-shadow(0 .4cqw .6cqw rgba(60,20,20,.35));}
 .cert .inner{left:12%;right:12%;top:14.5%;bottom:20%;align-items:center;text-align:center;}
 .c-small{margin-top:0;font-family:Cinzel,'Cormorant Garamond',serif;letter-spacing:.9cqw;font-size:1.9cqw;color:#2F5D46;}
 .c-title{margin-top:1.6cqw;font-family:'Great Vibes',cursive;font-size:11.5cqw;line-height:1.05;color:#9E2A2B;}
 .c-word{font-family:Cinzel,'Cormorant Garamond',serif;letter-spacing:.9cqw;font-size:3.2cqw;margin-top:.4cqw;}
-.c-cert{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:2.8cqw;color:#6b5844;margin-top:2.2cqw;}
+.c-cert{font-family:'Patrick Hand',cursive;font-size:3cqw;color:#6b5844;margin-top:2.2cqw;}
 .c-name{font-family:'Great Vibes',cursive;font-size:12.5cqw;line-height:1.1;color:#3A2A1E;outline:none;min-width:30cqw;}
 .c-rule{width:46cqw;border-top:.2cqw solid #C9A24D;margin:.6cqw 0 1.6cqw;}
-.c-text{font-family:'Cormorant Garamond',serif;font-size:3cqw;line-height:1.4;max-width:60cqw;outline:none;}
+.c-text{font-family:'Patrick Hand',cursive;font-size:3.3cqw;line-height:1.4;max-width:60cqw;outline:none;}
 .c-sleigh{width:38cqw;margin-top:3.5cqw;}
 .c-seal{position:absolute;left:50%;top:82.4%;width:15.5cqw;transform:translate(-50%,-50%);filter:drop-shadow(0 .5cqw .8cqw rgba(60,20,20,.35));}
 .c-sig{position:absolute;bottom:8.6%;width:25cqw;text-align:center;border-top:.25cqw solid #3A2A1E;padding-top:.6cqw;}
@@ -249,11 +249,21 @@ function render(o){
   document.getElementById('replySignoff').textContent=str(o.signoff)||'With a jolly heart,';
   document.getElementById('sheetReply').classList.toggle('hidden',!rp.length);
   document.getElementById('btnReply').classList.toggle('hidden',!rp.length);
+  document.getElementById('result').classList.remove('hidden');fitAll();
   const nm=str(o.childName||o.child_name)||((paras[0]||'').replace(/^dear\s+/i,'').replace(/[,:]\s*$/,''))||'Your Child';
   document.getElementById('certName').textContent=nm;
   const r=document.getElementById('result');r.classList.remove('hidden');
   return true;
 }
+function fit(id){
+  const sh=document.getElementById(id);if(!sh||sh.offsetParent===null)return;
+  const inner=sh.querySelector('.inner'),lt=sh.querySelector('.letter');
+  let sz=3.8;lt.style.fontSize=sz+'cqw';
+  while(sz>2.0&&inner.scrollHeight>inner.clientHeight+1){sz-=0.05;lt.style.fontSize=sz.toFixed(2)+'cqw';}
+  lt.style.setProperty('--dear',(sz*1.2).toFixed(2)+'cqw');
+}
+function fitAll(){fit('sheet');fit('sheetReply');}
+document.addEventListener('DOMContentLoaded',()=>{['letter','replyBody'].forEach(i=>document.getElementById(i).addEventListener('input',fitAll));});
 function printWhich(c){document.body.classList.remove('pl','pc');document.body.classList.add(c);window.print();}
 function makeLetter(){
   const text=document.getElementById('paste').value;
