@@ -45,7 +45,7 @@ details pre{white-space:pre-wrap;font-size:12px;background:var(--blush);border-r
 .checkbox ul{padding-left:18px;margin-top:4px;}
 .sheet{container-type:inline-size;position:relative;width:100%;aspect-ratio:8.5/11;background:#FBF0D9 url(art/letter-bg.jpg) center/100% 100% no-repeat;box-shadow:0 6px 24px rgba(59,42,58,.18);color:#3A2A1E;overflow:hidden;margin-bottom:26px;}
 .sheet.cert{background-image:url(art/certificate-bg.jpg);}
-.inner{position:absolute;left:15%;right:13%;top:19%;bottom:15%;display:flex;flex-direction:column;}
+.inner{position:absolute;left:15%;right:13%;top:19%;bottom:22%;display:flex;flex-direction:column;}
 .date{text-align:right;font-size:2.5cqw;color:#6b5844;margin-bottom:1.2cqw;font-family:'Patrick Hand',cursive;}
 .letter{font-family:'Patrick Hand','Comic Sans MS',cursive;font-size:2.9cqw;line-height:1.36;outline:none;}
 .letter p{margin-bottom:1.4cqw;}
@@ -78,7 +78,7 @@ footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
   #result{margin:0;}
   .page>*:not(#result),#result>*:not(.sheet){display:none!important;}
   .page{padding:0;max-width:none;}
-  .sheet{box-shadow:none;margin:0;width:8.5in;height:10.97in;-webkit-print-color-adjust:exact;print-color-adjust:exact;break-after:avoid;}
+  .sheet{box-shadow:none;margin:0 auto;width:99%;height:auto;aspect-ratio:8.5/11;-webkit-print-color-adjust:exact;print-color-adjust:exact;break-inside:avoid;page-break-inside:avoid;break-after:avoid;page-break-after:avoid;}
   body.pl #sheetCert,body.pl #sheetReply{display:none!important;}
   body.pc #sheet,body.pc #sheetReply{display:none!important;}
   body.pr #sheet,body.pr #sheetCert{display:none!important;}
@@ -260,7 +260,7 @@ function render(o){
   document.getElementById('replySignoff').textContent=str(o.signoff)||'With a jolly heart,';
   document.getElementById('sheetReply').classList.toggle('hidden',!rp.length);
   document.getElementById('btnReply').classList.toggle('hidden',!rp.length);
-  document.getElementById('result').classList.remove('hidden');fitAll();
+  document.getElementById('result').classList.remove('hidden');fitSoon();
   const nm=str(o.childName||o.child_name)||((paras[0]||'').replace(/^dear\s+/i,'').replace(/[,:]\s*$/,''))||'Your Child';
   document.getElementById('certName').textContent=nm;
   const r=document.getElementById('result');r.classList.remove('hidden');
@@ -274,9 +274,9 @@ function fit(id){
   lt.style.setProperty('--dear',(sz*1.2).toFixed(2)+'cqw');
   sh.dataset.over=inner.scrollHeight>inner.clientHeight+1?'1':'';
 }
-if(document.fonts&&document.fonts.ready)document.fonts.ready.then(()=>fitAll());
 function fitAll(){fit('sheet');fit('sheetReply');document.getElementById('tooLong').classList.toggle('hidden',!(document.getElementById('sheet').dataset.over||document.getElementById('sheetReply').dataset.over));}
 document.addEventListener('DOMContentLoaded',()=>{['letter','replyBody'].forEach(i=>document.getElementById(i).addEventListener('input',fitAll));});
+function fitSoon(){fitAll();if(document.fonts){document.fonts.load('1em "Patrick Hand"').then(fitAll);document.fonts.ready.then(fitAll);}}
 function printWhich(c){document.body.classList.remove('pl','pc');document.body.classList.add(c);window.print();}
 function makeLetter(){
   const text=document.getElementById('paste').value;
