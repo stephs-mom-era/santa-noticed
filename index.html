@@ -70,10 +70,11 @@ details pre{white-space:pre-wrap;font-size:12px;background:var(--blush);border-r
 .c-sig .v{font-family:'Great Vibes',cursive;font-size:5.6cqw;color:#9E2A2B;line-height:1;position:absolute;left:0;right:0;bottom:100%;margin-bottom:.4cqw;}
 .c-sig .v.d{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:2.7cqw;color:#3A2A1E;margin-bottom:.8cqw;}
 .c-sig .k{font-family:Cinzel,serif;font-size:1.5cqw;letter-spacing:.5cqw;color:#3A2A1E;}
-.ready{background:var(--card);border:1px solid var(--peach);border-radius:12px;padding:14px 18px;margin:0 0 16px;text-align:center;}
-.ready p{margin-bottom:10px;color:var(--ink);}
-.ready .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
-.ready a{text-decoration:none;display:inline-flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;min-height:46px;border-radius:8px;font-size:15px;font-weight:500;padding:11px 20px;}
+.result-bar{flex-direction:column;align-items:center;gap:8px;}
+.result-bar .btn-primary{min-width:220px;font-size:17px;}
+.linkish{background:none;border:none;min-height:0;padding:4px 8px;color:var(--plum);text-decoration:underline;font-size:14px;font-weight:400;}
+.pdfmsg{text-align:center;margin:-6px 0 14px;font-size:14px;color:var(--ink);}
+.pdfmsg a{color:var(--plum);font-weight:600;}
 .pdfhost{position:absolute;left:-30000px;top:0;visibility:hidden;pointer-events:none;}
 .hero{display:block;width:min(82%,520px);margin:0 auto 8px;}
 footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
@@ -85,9 +86,6 @@ footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
   .page>*:not(#result),#result>*:not(.sheet){display:none!important;}
   .page{padding:0;max-width:none;}
   .sheet{box-shadow:none;margin:0 auto;width:min(7in,100%);height:auto;aspect-ratio:8.5/11;-webkit-print-color-adjust:exact;print-color-adjust:exact;break-inside:avoid;page-break-inside:avoid;break-after:avoid;page-break-after:avoid;}
-  body.pl #sheetCert,body.pl #sheetReply{display:none!important;}
-  body.pc #sheet,body.pc #sheetReply{display:none!important;}
-  body.pr #sheet,body.pr #sheetCert{display:none!important;}
 }
 </style>
 </head>
@@ -134,21 +132,12 @@ footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
 
   <div id="result" class="hidden">
     <div class="result-bar">
-      <button class="btn-primary" onclick="getPdf('pl')" id="btnLetter">Print the letter</button>
-      <button class="btn-primary" onclick="getPdf('pr')" id="btnReply">Print Santa&#8217;s reply</button>
-      <button class="btn-primary" onclick="getPdf('pc')" id="btnCert">Print the certificate</button>
-      <button class="btn-secondary" onclick="document.getElementById('aiCard').scrollIntoView({behavior:'smooth'})">Make another</button>
+      <button class="btn-primary" onclick="getPdf()" id="btnPdf">Get the PDF</button>
+      <button class="linkish" onclick="document.getElementById('aiCard').scrollIntoView({behavior:'smooth'})">Make another</button>
     </div>
-    <p class="hint warn hidden" id="tooLong">This one is too long for one page. Tap the letter and delete a sentence or two until this message goes away.</p>
-    <p class="hint">Tap the letter, the reply or the name on the certificate to change any word. Each print button makes a one-page PDF. On a phone, tap Print in the menu that pops up (or Save to Files to keep it).</p>
-    <div class="ready hidden" id="ready" aria-live="polite">
-      <p id="readyMsg"></p>
-      <div class="row" id="readyRow">
-        <button class="btn-primary hidden" id="readyShare">Share or print</button>
-        <a class="btn-secondary hidden" id="readyOpen" target="_blank">Open the PDF</a>
-        <a class="btn-secondary hidden" id="readySave">Save the PDF</a>
-      </div>
-    </div>
+    <p class="hint">Opens your PDF. Use your phone&#8217;s Share button to print or save it. Give each page on its date (see above).</p>
+    <p class="hint warn hidden" id="tooLong" aria-live="polite"></p>
+    <p class="pdfmsg hidden" id="pdfMsg" aria-live="polite"></p>
 
     <div class="sheet" id="sheet">
       <div class="inner">
@@ -176,7 +165,7 @@ footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
         <div class="c-cert">This is to certify that</div>
         <div class="c-name" id="certName" contenteditable="true" spellcheck="false">Your Child</div>
         <div class="c-rule"></div>
-        <div class="c-text" contenteditable="true">has been very good this year, and is officially on Santa&#8217;s Nice List.</div>
+        <div class="c-text" id="certText" contenteditable="true">has been very good this year, and is officially on Santa&#8217;s Nice List.</div>
         <img class="c-sleigh" src="art/sleigh.png" alt="">
       </div>
       <div class="c-sig l"><span class="v">Santa Claus</span><span class="k">SANTA</span></div>
@@ -185,7 +174,7 @@ footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
     </div>
 
     <div class="checkbox" id="checkBox">
-      <strong>Check it before you print.</strong> These are the details Santa used. Every one should be something you told the AI. Delete any line in the letter that isn&#8217;t true.
+      <strong>Check it before you print.</strong> These are the details Santa used. Every one should be something you told the AI. Tap any word to change it, and delete any line that isn&#8217;t true.
       <ul id="usedList"></ul>
     </div>
   </div>
@@ -273,8 +262,7 @@ function render(o){
   document.getElementById('replyDate').textContent='December 1, '+yr;
   document.getElementById('replySignoff').textContent=str(o.signoff)||'With a jolly heart,';
   document.getElementById('sheetReply').classList.toggle('hidden',!rp.length);
-  document.getElementById('btnReply').classList.toggle('hidden',!rp.length);
-  document.getElementById('result').classList.remove('hidden');fitSoon();warmPdf();clearReady();
+  document.getElementById('result').classList.remove('hidden');fitSoon();warmPdf();clearPdfMsg();
   const nm=str(o.childName||o.child_name)||((paras[0]||'').replace(/^dear\s+/i,'').replace(/[,:]\s*$/,''))||'Your Child';
   document.getElementById('certName').textContent=nm;fitSoon();
   const r=document.getElementById('result');r.classList.remove('hidden');
@@ -300,8 +288,38 @@ function fitCertSheet(sh){
 const shown=id=>{const e=document.getElementById(id);return e&&e.offsetParent!==null?e:null;};
 function fit(id){fitSheet(shown(id));}
 function fitCert(){fitCertSheet(shown('sheetCert'));}
-function fitAll(){fitCert();fit('sheet');fit('sheetReply');document.getElementById('tooLong').classList.toggle('hidden',!(document.getElementById('sheet').dataset.over||document.getElementById('sheetReply').dataset.over));}
-document.addEventListener('DOMContentLoaded',()=>{['letter','replyBody','certName'].forEach(i=>document.getElementById(i).addEventListener('input',()=>{fitAll();clearReady();}));});
+function overSheets(){return SHEET_ORDER.filter(s=>s.id!=='sheetCert'&&shown(s.id)&&document.getElementById(s.id).dataset.over);}
+function tooLongText(list){
+  const names=list.map(s=>s.label);
+  return (names.length>1?'The letter and the reply are':'The '+names[0]+' is')+' too long for one page. Tap '+(names.length>1?'each one':'it')+' and delete a sentence or two until this message goes away.';
+}
+function fitAll(){
+  fitCert();fit('sheet');fit('sheetReply');
+  const over=overSheets(),w=document.getElementById('tooLong');
+  w.classList.toggle('hidden',!over.length);if(over.length)w.textContent=tooLongText(over);
+}
+const EDITS=['letter','replyBody','certName','certText','dateLine','replyDate'];
+document.addEventListener('DOMContentLoaded',()=>{
+  EDITS.forEach(i=>document.getElementById(i).addEventListener('input',()=>{fitAll();clearPdfMsg();saveState();}));
+  restoreState();
+});
+/* Keep the letter and any edits if the phone reloads this tab (e.g. after the PDF opens in a new tab).
+   sessionStorage stays on this device, in this tab only. */
+function saveState(o){
+  try{
+    if(o)sessionStorage.setItem('sn.o',JSON.stringify(o));
+    const e={};EDITS.forEach(i=>e[i]=document.getElementById(i).innerHTML);
+    sessionStorage.setItem('sn.e',JSON.stringify(e));
+  }catch(x){}
+}
+function restoreState(){
+  try{
+    const o=JSON.parse(sessionStorage.getItem('sn.o')||'null');if(!o||!render(o))return;
+    const e=JSON.parse(sessionStorage.getItem('sn.e')||'null');
+    if(e)EDITS.forEach(i=>{if(typeof e[i]==='string')document.getElementById(i).innerHTML=e[i];});
+    fitSoon();
+  }catch(x){}
+}
 function fitSoon(){fitAll();if(document.fonts){document.fonts.load('1em "Patrick Hand"').then(fitAll);document.fonts.ready.then(fitAll);}}
 
 /* ---------- One-page PDF, made on this device ----------
@@ -309,7 +327,7 @@ function fitSoon(){fitAll();if(document.fonts){document.fonts.load('1em "Patrick
    canvas at 300 dpi, and wrapped in a one-page US Letter PDF (612x792 pt).
    Nothing is uploaded: no network calls, the answers never leave the page. */
 const PDF={W:2550,H:3300,marginPt:18}; // canvas px (8.5x11 in at 300 dpi); 0.25in white margin so no printer crops the art
-const SHEETS={pl:{id:'sheet',file:'santa-letter',label:'letter'},pr:{id:'sheetReply',file:'santa-reply',label:'reply'},pc:{id:'sheetCert',file:'nice-list-certificate',label:'certificate'}};
+const SHEET_ORDER=[{id:'sheet',label:'letter'},{id:'sheetReply',label:'reply'},{id:'sheetCert',label:'certificate'}];
 const FONTS=['400 40px "Patrick Hand"','400 40px "Great Vibes"','400 40px "Cormorant Garamond"','italic 400 40px "Cormorant Garamond"'];
 async function fontsReady(){
   if(!document.fonts)return;
@@ -393,76 +411,78 @@ function canvasJpeg(cv){
     else{const d=atob(cv.toDataURL('image/jpeg',0.92).split(',')[1]);const u=new Uint8Array(d.length);for(let i=0;i<d.length;i++)u[i]=d.charCodeAt(i);ok(u);}
   });
 }
-function onePagePdf(jpg,wPx,hPx,title){
-  // Minimal PDF 1.4: one US Letter page with the JPEG centered inside a 0.25in margin.
-  const PW=612,PH=792,mg=PDF.marginPt,sc=Math.min((PW-2*mg)/wPx,(PH-2*mg)/hPx);
-  const iw=+(wPx*sc).toFixed(2),ih=+(hPx*sc).toFixed(2),ix=+((PW-iw)/2).toFixed(2),iy=+((PH-ih)/2).toFixed(2);
+function buildPdf(pages,title){
+  // Minimal PDF 1.4: one US Letter page per image, each JPEG centered inside a 0.25in margin.
+  const PW=612,PH=792,mg=PDF.marginPt;
   const enc=new TextEncoder(),parts=[],offs=[];let len=0;
   const add=x=>{const b=typeof x==='string'?enc.encode(x):x;parts.push(b);len+=b.length;};
   const obj=(n,body)=>{offs[n]=len;add(n+' 0 obj\n');if(Array.isArray(body))body.forEach(add);else add(body);add('\nendobj\n');};
   const safeTitle=String(title).replace(/[^\x20-\x7e]/g,'').replace(/[()\\]/g,'');
-  const content=`q ${iw} 0 0 ${ih} ${ix} ${iy} cm /Im0 Do Q`;
+  const n=pages.length,pageObj=i=>3+i*3,last=2+n*3+1;
   add('%PDF-1.4\n');add(new Uint8Array([37,226,227,207,211,10]));
   obj(1,'<< /Type /Catalog /Pages 2 0 R >>');
-  obj(2,'<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
-  obj(3,`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`);
-  obj(4,[`<< /Type /XObject /Subtype /Image /Width ${wPx} /Height ${hPx} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`,jpg,'\nendstream']);
-  obj(5,`<< /Length ${content.length} >>\nstream\n${content}\nendstream`);
-  obj(6,`<< /Title (${safeTitle}) /Producer (Santa Noticed) >>`);
-  const xref=len;let x='xref\n0 7\n0000000000 65535 f \n';
-  for(let i=1;i<=6;i++)x+=String(offs[i]).padStart(10,'0')+' 00000 n \n';
-  add(x+`trailer\n<< /Size 7 /Root 1 0 R /Info 6 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+  obj(2,`<< /Type /Pages /Kids [${pages.map((_,i)=>pageObj(i)+' 0 R').join(' ')}] /Count ${n} >>`);
+  pages.forEach((pg,i)=>{
+    const P=pageObj(i),sc=Math.min((PW-2*mg)/pg.w,(PH-2*mg)/pg.h);
+    const iw=+(pg.w*sc).toFixed(2),ih=+(pg.h*sc).toFixed(2),ix=+((PW-iw)/2).toFixed(2),iy=+((PH-ih)/2).toFixed(2);
+    const content=`q ${iw} 0 0 ${ih} ${ix} ${iy} cm /Im0 Do Q`;
+    obj(P,`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources << /XObject << /Im0 ${P+1} 0 R >> >> /Contents ${P+2} 0 R >>`);
+    obj(P+1,[`<< /Type /XObject /Subtype /Image /Width ${pg.w} /Height ${pg.h} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${pg.jpg.length} >>\nstream\n`,pg.jpg,'\nendstream']);
+    obj(P+2,`<< /Length ${content.length} >>\nstream\n${content}\nendstream`);
+  });
+  obj(last,`<< /Title (${safeTitle}) /Producer (Santa Noticed) >>`);
+  const xref=len;let x=`xref\n0 ${last+1}\n0000000000 65535 f \n`;
+  for(let i=1;i<=last;i++)x+=String(offs[i]).padStart(10,'0')+' 00000 n \n';
+  add(x+`trailer\n<< /Size ${last+1} /Root 1 0 R /Info ${last} 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
   return new Blob(parts,{type:'application/pdf'});
 }
-async function makePdf(which){
-  const S=SHEETS[which],cv=await sheetCanvas(S.id);
-  const jpg=await canvasJpeg(cv);const w=cv.width,h=cv.height;cv.width=cv.height=1; // free memory on phones
+function sheetsToPrint(){return SHEET_ORDER.filter(s=>!document.getElementById(s.id).classList.contains('hidden'));}
+async function makePdf(){
+  const pages=[];
+  for(const S of sheetsToPrint()){ // one at a time: a 300 dpi canvas is big for a phone
+    let cv;
+    try{cv=await sheetCanvas(S.id);}catch(e){if(e.tooLong)e.sheets=[S];throw e;}
+    const jpg=await canvasJpeg(cv);pages.push({jpg,w:cv.width,h:cv.height});cv.width=cv.height=1;
+  }
   const nm=(document.getElementById('certName').textContent||'').normalize('NFKD').replace(/[^\w ]/g,'').trim().replace(/\s+/g,'-').toLowerCase();
-  const fname=S.file+(nm&&nm!=='your-child'?'-'+nm:'')+'.pdf';
-  return {blob:onePagePdf(jpg,w,h,'Santa Noticed '+S.label),fname};
+  const fname='santa-noticed'+(nm&&nm!=='your-child'?'-'+nm:'')+'.pdf';
+  const blob=buildPdf(pages,'Santa Noticed');
+  let file=blob;try{file=new File([blob],fname,{type:'application/pdf'});}catch(e){}
+  return {blob:file,fname,pages:pages.length};
 }
-const isPhone=()=>/iPhone|iPad|iPod|Android|Mobi/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-let pdfBusy=false,readyUrl=null;
-function clearReady(){document.getElementById('ready').classList.add('hidden');}
-function showReady(text,pdf){
-  const box=document.getElementById('ready');box.classList.remove('hidden');
-  document.getElementById('readyMsg').textContent=text;
-  const sh=document.getElementById('readyShare'),op=document.getElementById('readyOpen'),sv=document.getElementById('readySave');
-  [sh,op,sv].forEach(e=>e.classList.add('hidden'));
-  if(!pdf)return;
-  if(readyUrl)URL.revokeObjectURL(readyUrl);
-  readyUrl=URL.createObjectURL(pdf.blob);
-  op.href=readyUrl;op.classList.remove('hidden');
-  if(!isPhone()){sv.href=readyUrl;sv.download=pdf.fname;sv.classList.remove('hidden');}
-  if(pdf.file&&navigator.canShare&&navigator.canShare({files:[pdf.file]})){sh.classList.remove('hidden');sh.onclick=()=>navigator.share({files:[pdf.file]}).catch(()=>{});}
+let pdfBusy=false;
+function clearPdfMsg(){document.getElementById('pdfMsg').classList.add('hidden');}
+function pdfMsg(html){const m=document.getElementById('pdfMsg');m.innerHTML=html;m.classList.remove('hidden');}
+function waitingPage(win){
+  try{win.document.write('<!DOCTYPE html><title>Santa Noticed</title><meta name="viewport" content="width=device-width"><body style="font:18px sans-serif;color:#3A2A1E;background:#FBF3E4;text-align:center;padding:40px 20px">Making your PDF…</body>');win.document.close();}catch(e){}
 }
-async function getPdf(which){
-  if(pdfBusy)return;pdfBusy=true;
-  const S=SHEETS[which],btns=['btnLetter','btnReply','btnCert'].map(i=>document.getElementById(i));
-  btns.forEach(b=>b.disabled=true);
-  showReady('Making your '+S.label+' PDF…');
-  document.getElementById('ready').scrollIntoView({block:'nearest'});
-  const phone=isPhone();
-  let win=null;if(!phone){try{win=window.open('','_blank');}catch(e){}}
+async function getPdf(){
+  if(pdfBusy)return;
+  clearPdfMsg();fitAll();
+  const over=overSheets();
+  if(over.length){document.getElementById('tooLong').scrollIntoView({block:'center'});return;}
+  pdfBusy=true;
+  const btn=document.getElementById('btnPdf');btn.disabled=true;btn.textContent='Making your PDF…';
+  // Open the new tab now, while the tap still counts, so the phone doesn't block it. This page stays as it is.
+  let win=null;try{win=window.open('','_blank');}catch(e){}
+  if(win)waitingPage(win);
   try{
-    fitAll();
-    const pdf=await makePdf(which);
-    try{pdf.file=new File([pdf.blob],pdf.fname,{type:'application/pdf'});}catch(e){}
-    showReady('Your '+S.label+' is ready: one page, US Letter.'+(phone?' Tap Share or print, then Print.':''),pdf);
-    if(win){win.location.href=readyUrl;}
-    else if(phone&&pdf.file&&navigator.canShare&&navigator.canShare({files:[pdf.file]})){
-      try{await navigator.share({files:[pdf.file]});}catch(e){/* cancelled, or the phone wants a fresh tap: the buttons above work */}
-    }
+    const pdf=await makePdf();
+    const url=URL.createObjectURL(pdf.blob);
+    if(win&&!win.closed){win.location.href=url;}
+    else pdfMsg('<a href="'+url+'" target="_blank" rel="noopener">Open the PDF</a>');
   }catch(e){
-    if(win)win.close();
-    showReady(e.tooLong?'This one is too long for one page. Tap it and delete a sentence or two, then try again.':'Sorry, the PDF didn’t work. Try again, or try another browser.');
-  }finally{pdfBusy=false;btns.forEach(b=>b.disabled=false);}
+    if(win)try{win.close();}catch(x){}
+    if(e.tooLong){const w=document.getElementById('tooLong');w.textContent=tooLongText(e.sheets);w.classList.remove('hidden');w.scrollIntoView({block:'center'});}
+    else pdfMsg('Sorry, the PDF didn’t work. Try again, or try another browser.');
+  }finally{pdfBusy=false;btn.disabled=false;btn.textContent='Get the PDF';}
 }
 function makeLetter(){
   const text=document.getElementById('paste').value;
   if(!text.trim()){msg('pasteMsg','Paste the AI’s answer first.',true);return;}
   const o=parseAI(text);
   if(!o||!render(o)){msg('pasteMsg','That didn’t look like the letter. Go back to the AI and say: "Give me the final JSON only." Then paste that.',true);return;}
+  saveState(o);
   msg('pasteMsg','Your letter is ready below.');
   document.getElementById('result').scrollIntoView({behavior:'smooth'});
 }
