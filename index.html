@@ -4,10 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Santa Noticed: a letter from Santa that sounds like he was watching</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&family=Great+Vibes&family=Patrick+Hand&display=swap" rel="stylesheet">
+<link href="fonts.css" rel="stylesheet">
 <style>
 :root{--bg:#FBF3E4;--card:#FFFDF8;--blush:#F5E6CB;--border:rgba(158,42,43,0.20);--peach:#E2CBA0;--plum:#9E2A2B;--plum-2:#B83B3B;--ink:#3A2A1E;--mid:#5A4030;--light:#8A6A4A;--red:#9E2A2B;--green:#2F5D46;}
 *{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;}
 body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--mid);font-size:15px;line-height:1.6;}
 .page{max-width:760px;margin:0 auto;padding:28px 20px 80px;}
 h1{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:38px;line-height:1.1;color:var(--ink);text-align:center;margin-bottom:8px;}
@@ -69,6 +70,11 @@ details pre{white-space:pre-wrap;font-size:12px;background:var(--blush);border-r
 .c-sig .v{font-family:'Great Vibes',cursive;font-size:5.6cqw;color:#9E2A2B;line-height:1;position:absolute;left:0;right:0;bottom:100%;margin-bottom:.4cqw;}
 .c-sig .v.d{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:2.7cqw;color:#3A2A1E;margin-bottom:.8cqw;}
 .c-sig .k{font-family:Cinzel,serif;font-size:1.5cqw;letter-spacing:.5cqw;color:#3A2A1E;}
+.ready{background:var(--card);border:1px solid var(--peach);border-radius:12px;padding:14px 18px;margin:0 0 16px;text-align:center;}
+.ready p{margin-bottom:10px;color:var(--ink);}
+.ready .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;}
+.ready a{text-decoration:none;display:inline-flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;min-height:46px;border-radius:8px;font-size:15px;font-weight:500;padding:11px 20px;}
+.pdfhost{position:absolute;left:-30000px;top:0;visibility:hidden;pointer-events:none;}
 .hero{display:block;width:min(82%,520px);margin:0 auto 8px;}
 footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
 @media(max-width:600px){h1{font-size:30px;}}
@@ -128,13 +134,21 @@ footer{text-align:center;font-size:12px;color:var(--light);margin-top:34px;}
 
   <div id="result" class="hidden">
     <div class="result-bar">
-      <button class="btn-primary" onclick="printWhich('pl')">Print the letter</button>
-      <button class="btn-primary" onclick="printWhich('pr')" id="btnReply">Print Santa&#8217;s reply</button>
-      <button class="btn-primary" onclick="printWhich('pc')">Print the certificate</button>
+      <button class="btn-primary" onclick="getPdf('pl')" id="btnLetter">Print the letter</button>
+      <button class="btn-primary" onclick="getPdf('pr')" id="btnReply">Print Santa&#8217;s reply</button>
+      <button class="btn-primary" onclick="getPdf('pc')" id="btnCert">Print the certificate</button>
       <button class="btn-secondary" onclick="document.getElementById('aiCard').scrollIntoView({behavior:'smooth'})">Make another</button>
     </div>
     <p class="hint warn hidden" id="tooLong">This one is too long for one page. Tap the letter and delete a sentence or two until this message goes away.</p>
-    <p class="hint">Tap the letter, the reply or the name on the certificate to change any word. Printing leaves out everything except the page you pick. Choose &#8220;Save as PDF&#8221; to keep it.</p>
+    <p class="hint">Tap the letter, the reply or the name on the certificate to change any word. Each print button makes a one-page PDF. On a phone, tap Print in the menu that pops up (or Save to Files to keep it).</p>
+    <div class="ready hidden" id="ready" aria-live="polite">
+      <p id="readyMsg"></p>
+      <div class="row" id="readyRow">
+        <button class="btn-primary hidden" id="readyShare">Share or print</button>
+        <a class="btn-secondary hidden" id="readyOpen" target="_blank">Open the PDF</a>
+        <a class="btn-secondary hidden" id="readySave">Save the PDF</a>
+      </div>
+    </div>
 
     <div class="sheet" id="sheet">
       <div class="inner">
@@ -260,31 +274,190 @@ function render(o){
   document.getElementById('replySignoff').textContent=str(o.signoff)||'With a jolly heart,';
   document.getElementById('sheetReply').classList.toggle('hidden',!rp.length);
   document.getElementById('btnReply').classList.toggle('hidden',!rp.length);
-  document.getElementById('result').classList.remove('hidden');fitSoon();
+  document.getElementById('result').classList.remove('hidden');fitSoon();warmPdf();clearReady();
   const nm=str(o.childName||o.child_name)||((paras[0]||'').replace(/^dear\s+/i,'').replace(/[,:]\s*$/,''))||'Your Child';
   document.getElementById('certName').textContent=nm;fitSoon();
   const r=document.getElementById('result');r.classList.remove('hidden');
   return true;
 }
-function fit(id){
-  const sh=document.getElementById(id);if(!sh||sh.offsetParent===null)return;
+function fitSheet(sh){
+  if(!sh)return;
   const inner=sh.querySelector('.inner'),lt=sh.querySelector('.letter');
   let sz=3.8;lt.style.fontSize=sz+'cqw';
-  const room=()=>inner.scrollHeight>inner.clientHeight*0.96;
-  while(sz>1.8&&room()){sz-=0.05;lt.style.fontSize=sz.toFixed(2)+'cqw';}
-  lt.style.setProperty('--dear',(sz*1.2).toFixed(2)+'cqw');
-  sh.dataset.over=inner.scrollHeight>inner.clientHeight+1?'1':'';
+  // Height the text really needs (scrollHeight never drops below the box, so it can't tell "fits").
+  const used=()=>{const t=inner.getBoundingClientRect().top;let b=t;for(const c of inner.children)b=Math.max(b,c.getBoundingClientRect().bottom);return b-t;};
+  const setSz=v=>{lt.style.fontSize=v.toFixed(2)+'cqw';lt.style.setProperty('--dear',(v*1.2).toFixed(2)+'cqw');};
+  setSz(sz);
+  while(sz>1.8&&used()>inner.clientHeight*0.96){sz-=0.05;setSz(sz);}
+  sh.dataset.over=used()>inner.clientHeight+1?'1':'';
 }
-function fitCert(){
-  const sh=document.getElementById('sheetCert');if(!sh||sh.offsetParent===null)return;
-  const inner=sh.querySelector('.inner'),nm=document.getElementById('certName');
+function fitCertSheet(sh){
+  if(!sh)return;
+  const inner=sh.querySelector('.inner'),nm=sh.querySelector('.c-name');
   let sz=12.5;nm.style.fontSize=sz+'cqw';
   while(sz>5&&(nm.scrollWidth>inner.clientWidth||nm.offsetHeight>sh.clientWidth*sz/100*1.3||inner.scrollHeight>inner.clientHeight+1)){sz-=0.25;nm.style.fontSize=sz.toFixed(2)+'cqw';}
 }
+const shown=id=>{const e=document.getElementById(id);return e&&e.offsetParent!==null?e:null;};
+function fit(id){fitSheet(shown(id));}
+function fitCert(){fitCertSheet(shown('sheetCert'));}
 function fitAll(){fitCert();fit('sheet');fit('sheetReply');document.getElementById('tooLong').classList.toggle('hidden',!(document.getElementById('sheet').dataset.over||document.getElementById('sheetReply').dataset.over));}
-document.addEventListener('DOMContentLoaded',()=>{['letter','replyBody','certName'].forEach(i=>document.getElementById(i).addEventListener('input',fitAll));});
+document.addEventListener('DOMContentLoaded',()=>{['letter','replyBody','certName'].forEach(i=>document.getElementById(i).addEventListener('input',()=>{fitAll();clearReady();}));});
 function fitSoon(){fitAll();if(document.fonts){document.fonts.load('1em "Patrick Hand"').then(fitAll);document.fonts.ready.then(fitAll);}}
-function printWhich(c){document.body.classList.remove('pl','pc','pr');document.body.classList.add(c);fitAll();window.print();}
+
+/* ---------- One-page PDF, made on this device ----------
+   Each sheet is laid out off screen at a fixed Letter size, painted onto a
+   canvas at 300 dpi, and wrapped in a one-page US Letter PDF (612x792 pt).
+   Nothing is uploaded: no network calls, the answers never leave the page. */
+const PDF={W:2550,H:3300,marginPt:18}; // canvas px (8.5x11 in at 300 dpi); 0.25in white margin so no printer crops the art
+const SHEETS={pl:{id:'sheet',file:'santa-letter',label:'letter'},pr:{id:'sheetReply',file:'santa-reply',label:'reply'},pc:{id:'sheetCert',file:'nice-list-certificate',label:'certificate'}};
+const FONTS=['400 40px "Patrick Hand"','400 40px "Great Vibes"','400 40px "Cormorant Garamond"','italic 400 40px "Cormorant Garamond"'];
+async function fontsReady(){
+  if(!document.fonts)return;
+  try{await Promise.all(FONTS.map(f=>document.fonts.load(f,'Aa')));await document.fonts.ready;}catch(e){}
+}
+const imgCache={};
+function loadImg(src){
+  if(!imgCache[src])imgCache[src]=new Promise((ok,bad)=>{const i=new Image();i.onload=()=>{(i.decode?i.decode():Promise.resolve()).catch(()=>{}).then(()=>ok(i));};i.onerror=()=>{delete imgCache[src];bad(new Error('image '+src));};i.src=src;});
+  return imgCache[src];
+}
+function warmPdf(){fontsReady();['art/letter-bg.jpg','art/certificate-bg.jpg','art/seal.png','art/sleigh.png'].forEach(u=>loadImg(new URL(u,location.href).href).catch(()=>{}));}
+function parseShadow(f){ // "drop-shadow(rgba(60, 20, 20, 0.35) 0px 4px 6px)"
+  const m=/drop-shadow\((rgba?\([^)]*\)|#[0-9a-f]+|\w+)\s+(-?[\d.]+)px\s+(-?[\d.]+)px\s+([\d.]+)px\)/i.exec(f||'');
+  return m?{c:m[1],x:+m[2],y:+m[3],b:+m[4]}:null;
+}
+function drawText(ctx,tn,R,k){
+  const el=tn.parentElement,cs=getComputedStyle(el);
+  ctx.font=`${cs.fontStyle} ${cs.fontWeight} ${parseFloat(cs.fontSize)*k}px ${cs.fontFamily}`;
+  ctx.fillStyle=cs.color;ctx.textBaseline='alphabetic';
+  const spaced=cs.letterSpacing&&cs.letterSpacing!=='normal'&&parseFloat(cs.letterSpacing)!==0;
+  const rg=document.createRange(),re=/\S+/g;let m;
+  const put=(txt,start)=>{
+    rg.setStart(tn,start);rg.setEnd(tn,start+txt.length);
+    const rs=rg.getClientRects();
+    if(rs.length!==1&&txt.length>1){for(let i=0;i<txt.length;i++)put(txt[i],start+i);return;}
+    if(!rs.length)return;
+    const r=rs[0],asc=ctx.measureText(txt).fontBoundingBoxAscent;
+    const a=(asc==null||isNaN(asc))?r.height*0.8:asc;
+    ctx.fillText(txt,(r.left-R.left)*k,(r.top-R.top)*k+a);
+  };
+  while((m=re.exec(tn.data))){
+    if(spaced){for(let i=0;i<m[0].length;i++)put(m[0][i],m.index+i);}else put(m[0],m.index);
+  }
+}
+async function paint(ctx,node,R,k){
+  for(const ch of node.childNodes){
+    if(ch.nodeType===3){if(ch.data.trim())drawText(ctx,ch,R,k);continue;}
+    if(ch.nodeType!==1)continue;
+    const cs=getComputedStyle(ch);if(cs.display==='none')continue;
+    const r=ch.getBoundingClientRect();
+    const bt=parseFloat(cs.borderTopWidth)||0;
+    if(bt>0&&cs.borderTopStyle!=='none'){ctx.fillStyle=cs.borderTopColor;ctx.fillRect((r.left-R.left)*k,(r.top-R.top)*k,r.width*k,bt*k);}
+    if(ch.tagName==='IMG'){
+      const im=await loadImg(ch.currentSrc||ch.src);const sh=parseShadow(cs.filter);
+      ctx.save();
+      if(sh){ctx.shadowColor=sh.c;ctx.shadowOffsetX=sh.x*k;ctx.shadowOffsetY=sh.y*k;ctx.shadowBlur=sh.b*k;}
+      ctx.drawImage(im,(r.left-R.left)*k,(r.top-R.top)*k,r.width*k,r.height*k);
+      ctx.restore();continue;
+    }
+    await paint(ctx,ch,R,k);
+  }
+}
+async function sheetCanvas(id){
+  await fontsReady();
+  const src=document.getElementById(id);
+  const host=document.createElement('div');host.className='pdfhost';host.style.width=PDF.W+'px';
+  const c=src.cloneNode(true);
+  c.removeAttribute('id');c.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));
+  c.querySelectorAll('[contenteditable]').forEach(e=>e.removeAttribute('contenteditable'));
+  c.classList.remove('hidden');
+  c.style.cssText+=';width:'+PDF.W+'px;height:'+PDF.H+'px;margin:0;box-shadow:none;';
+  host.appendChild(c);document.body.appendChild(host);
+  try{
+    await Promise.all([...c.querySelectorAll('img')].map(i=>i.complete&&i.naturalWidth?0:new Promise(ok=>{i.onload=i.onerror=ok;})));
+    if(c.classList.contains('cert'))fitCertSheet(c);else fitSheet(c);
+    if(c.dataset.over)throw Object.assign(new Error('too long'),{tooLong:true});
+    const R=c.getBoundingClientRect(),k=PDF.W/R.width;
+    const cv=document.createElement('canvas');cv.width=PDF.W;cv.height=PDF.H;
+    const ctx=cv.getContext('2d');
+    const cs=getComputedStyle(c);
+    ctx.fillStyle=cs.backgroundColor||'#FBF0D9';ctx.fillRect(0,0,PDF.W,PDF.H);
+    const bg=/url\(["']?([^"')]+)["']?\)/.exec(cs.backgroundImage||'');
+    if(bg)ctx.drawImage(await loadImg(bg[1]),0,0,PDF.W,PDF.H);
+    await paint(ctx,c,R,k);
+    return cv;
+  }finally{host.remove();}
+}
+function canvasJpeg(cv){
+  return new Promise((ok,bad)=>{
+    if(cv.toBlob)cv.toBlob(b=>b?b.arrayBuffer().then(x=>ok(new Uint8Array(x)),bad):bad(new Error('toBlob')),'image/jpeg',0.92);
+    else{const d=atob(cv.toDataURL('image/jpeg',0.92).split(',')[1]);const u=new Uint8Array(d.length);for(let i=0;i<d.length;i++)u[i]=d.charCodeAt(i);ok(u);}
+  });
+}
+function onePagePdf(jpg,wPx,hPx,title){
+  // Minimal PDF 1.4: one US Letter page with the JPEG centered inside a 0.25in margin.
+  const PW=612,PH=792,mg=PDF.marginPt,sc=Math.min((PW-2*mg)/wPx,(PH-2*mg)/hPx);
+  const iw=+(wPx*sc).toFixed(2),ih=+(hPx*sc).toFixed(2),ix=+((PW-iw)/2).toFixed(2),iy=+((PH-ih)/2).toFixed(2);
+  const enc=new TextEncoder(),parts=[],offs=[];let len=0;
+  const add=x=>{const b=typeof x==='string'?enc.encode(x):x;parts.push(b);len+=b.length;};
+  const obj=(n,body)=>{offs[n]=len;add(n+' 0 obj\n');if(Array.isArray(body))body.forEach(add);else add(body);add('\nendobj\n');};
+  const safeTitle=String(title).replace(/[^\x20-\x7e]/g,'').replace(/[()\\]/g,'');
+  const content=`q ${iw} 0 0 ${ih} ${ix} ${iy} cm /Im0 Do Q`;
+  add('%PDF-1.4\n');add(new Uint8Array([37,226,227,207,211,10]));
+  obj(1,'<< /Type /Catalog /Pages 2 0 R >>');
+  obj(2,'<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
+  obj(3,`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${PW} ${PH}] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >>`);
+  obj(4,[`<< /Type /XObject /Subtype /Image /Width ${wPx} /Height ${hPx} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpg.length} >>\nstream\n`,jpg,'\nendstream']);
+  obj(5,`<< /Length ${content.length} >>\nstream\n${content}\nendstream`);
+  obj(6,`<< /Title (${safeTitle}) /Producer (Santa Noticed) >>`);
+  const xref=len;let x='xref\n0 7\n0000000000 65535 f \n';
+  for(let i=1;i<=6;i++)x+=String(offs[i]).padStart(10,'0')+' 00000 n \n';
+  add(x+`trailer\n<< /Size 7 /Root 1 0 R /Info 6 0 R >>\nstartxref\n${xref}\n%%EOF\n`);
+  return new Blob(parts,{type:'application/pdf'});
+}
+async function makePdf(which){
+  const S=SHEETS[which],cv=await sheetCanvas(S.id);
+  const jpg=await canvasJpeg(cv);const w=cv.width,h=cv.height;cv.width=cv.height=1; // free memory on phones
+  const nm=(document.getElementById('certName').textContent||'').normalize('NFKD').replace(/[^\w ]/g,'').trim().replace(/\s+/g,'-').toLowerCase();
+  const fname=S.file+(nm&&nm!=='your-child'?'-'+nm:'')+'.pdf';
+  return {blob:onePagePdf(jpg,w,h,'Santa Noticed '+S.label),fname};
+}
+const isPhone=()=>/iPhone|iPad|iPod|Android|Mobi/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+let pdfBusy=false,readyUrl=null;
+function clearReady(){document.getElementById('ready').classList.add('hidden');}
+function showReady(text,pdf){
+  const box=document.getElementById('ready');box.classList.remove('hidden');
+  document.getElementById('readyMsg').textContent=text;
+  const sh=document.getElementById('readyShare'),op=document.getElementById('readyOpen'),sv=document.getElementById('readySave');
+  [sh,op,sv].forEach(e=>e.classList.add('hidden'));
+  if(!pdf)return;
+  if(readyUrl)URL.revokeObjectURL(readyUrl);
+  readyUrl=URL.createObjectURL(pdf.blob);
+  op.href=readyUrl;op.classList.remove('hidden');
+  if(!isPhone()){sv.href=readyUrl;sv.download=pdf.fname;sv.classList.remove('hidden');}
+  if(pdf.file&&navigator.canShare&&navigator.canShare({files:[pdf.file]})){sh.classList.remove('hidden');sh.onclick=()=>navigator.share({files:[pdf.file]}).catch(()=>{});}
+}
+async function getPdf(which){
+  if(pdfBusy)return;pdfBusy=true;
+  const S=SHEETS[which],btns=['btnLetter','btnReply','btnCert'].map(i=>document.getElementById(i));
+  btns.forEach(b=>b.disabled=true);
+  showReady('Making your '+S.label+' PDF…');
+  document.getElementById('ready').scrollIntoView({block:'nearest'});
+  const phone=isPhone();
+  let win=null;if(!phone){try{win=window.open('','_blank');}catch(e){}}
+  try{
+    fitAll();
+    const pdf=await makePdf(which);
+    try{pdf.file=new File([pdf.blob],pdf.fname,{type:'application/pdf'});}catch(e){}
+    showReady('Your '+S.label+' is ready: one page, US Letter.'+(phone?' Tap Share or print, then Print.':''),pdf);
+    if(win){win.location.href=readyUrl;}
+    else if(phone&&pdf.file&&navigator.canShare&&navigator.canShare({files:[pdf.file]})){
+      try{await navigator.share({files:[pdf.file]});}catch(e){/* cancelled, or the phone wants a fresh tap: the buttons above work */}
+    }
+  }catch(e){
+    if(win)win.close();
+    showReady(e.tooLong?'This one is too long for one page. Tap it and delete a sentence or two, then try again.':'Sorry, the PDF didn’t work. Try again, or try another browser.');
+  }finally{pdfBusy=false;btns.forEach(b=>b.disabled=false);}
+}
 function makeLetter(){
   const text=document.getElementById('paste').value;
   if(!text.trim()){msg('pasteMsg','Paste the AI’s answer first.',true);return;}
